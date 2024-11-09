@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <h2>Select Room:</h2>
+  <button id="room1">Room 1</button>
+  <button id="room2">Room 2</button>
+  <ul id="messages"></ul>
+  <form id="form" action="">
+    <input id="input" autocomplete="off" /><button>Send</button>
+  </form>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script>
+    let socket = io();
+    let currentRoom = '';
+
+    document.getElementById( 'room1' ).addEventListener( 'click', () => {
+      joinRoom( 'room1' );
+    } );
+
+    document.getElementById( 'room2' ).addEventListener( 'click', () => {
+      joinRoom( 'room2' );
+    } );
+
+    const joinRoom = ( room ) => {
+      currentRoom = room;
+      socket.emit( 'join room', room );
+    }
+
+    socket.on( 'connect', () => {
+      console.log( 'Connected to server' );
+    } );
+
+    const form = document.getElementById( "form" );
+    const input = document.getElementById( "input" );
+    const messages = document.getElementById( "messages" );
+
+    form.addEventListener( "submit", ( e ) => {
+      e.preventDefault();
+      if ( input.value ) {
+        socket.emit( "chat message", { room:currentRoom,msg:input.value} );
+        input.value = "";
+      }
+    } );
+    socket.on( "chat message", ( msg ) => {
+      let item = document.createElement( "li" );
+      item.textContent = msg;
+      messages.appendChild( item );
+    } )
+  </script>
+</body>
+
+</html>
