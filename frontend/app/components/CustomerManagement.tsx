@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Header from './CustomerManagement/Header'
 import CustomerTable from './CustomerManagement/CustomerTable'
 import Sidebar from './CustomerManagement/Sidebar'
+import { useMembers } from './hooks/useMembers'
 
 // 仮の顧客データ
 const customers = [
@@ -23,6 +24,8 @@ const displayOptions = [
 ]
 
 export default function CustomerManagement() {
+  const { data: members, isLoading, isError } = useMembers();
+  console.log({members, isLoading, isError});
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedOptions, setSelectedOptions] = useState(["name", "address","phone"])
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -40,6 +43,9 @@ export default function CustomerManagement() {
         : [...prev, optionId]
     )
   }
+
+  if(!members) return (<>App loading...</>);
+  console.log({members});
 
   return (
     <div className="flex flex-col h-screen">

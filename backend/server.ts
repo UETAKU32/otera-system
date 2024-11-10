@@ -5,7 +5,16 @@ import path from "path";
 import { PrismaClient } from "@prisma/client";
 
 dotenv.config();
+const cors = require('cors');
 const app = express();
+app.use(cors());
+
+app.use(cors({
+  origin: 'http://localhost:3000', // 許可するドメインを指定
+  methods: 'GET,POST,PUT,DELETE', // 許可する HTTP メソッドを指定
+  allowedHeaders: 'Content-Type,Authorization', // 許可するヘッダーを指定
+}));
+
 const http = require("http");
 const server = http.createServer(app);
 const io = require("socket.io")(server);
