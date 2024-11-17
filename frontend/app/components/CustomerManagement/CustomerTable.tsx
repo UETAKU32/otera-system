@@ -1,17 +1,14 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Member } from "@/app/types/member"
 
-type Customer = {
-  id: number;
-  [key: string]: string | number;
-}
 
 type CustomerTableProps = {
-  customers: Customer[];
+  members: Member[];
   selectedOptions: string[];
   displayOptions: { id: string; label: string }[];
 }
 
-export default function CustomerTable({ customers, selectedOptions, displayOptions }: CustomerTableProps) {
+export default function CustomerTable({ members, selectedOptions, displayOptions }: CustomerTableProps) {
   return (
     <main className="flex-1 overflow-auto p-4">
       <Table>
@@ -23,10 +20,10 @@ export default function CustomerTable({ customers, selectedOptions, displayOptio
           </TableRow>
         </TableHeader>
         <TableBody>
-          {customers.map(customer => (
-            <TableRow key={customer.id}>
+          {members.map(member => (
+            <TableRow key={member.id}>
               {selectedOptions.map(option => (
-                <TableCell key={option}>{customer[option]}</TableCell>
+                <TableCell key={option}>{member[option as keyof Member]?.toString()}</TableCell>
               ))}
             </TableRow>
           ))}
