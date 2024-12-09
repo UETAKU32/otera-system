@@ -4,15 +4,17 @@ import path from "path";
 import { PrismaClient } from "@prisma/client";
 
 dotenv.config();
-const cors = require('cors');
+const cors = require("cors");
 const app = express();
 app.use(cors());
 
-app.use(cors({
-  origin: 'http://localhost:3000', // 許可するドメインを指定
-  methods: 'GET,POST,PUT,DELETE', // 許可する HTTP メソッドを指定
-  allowedHeaders: 'Content-Type,Authorization', // 許可するヘッダーを指定
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3000", // 許可するドメインを指定
+    methods: "GET,POST,PUT,DELETE", // 許可する HTTP メソッドを指定
+    allowedHeaders: "Content-Type,Authorization", // 許可するヘッダーを指定
+  })
+);
 
 const http = require("http");
 const server = http.createServer(app);
@@ -30,20 +32,18 @@ app.get("/api/members", async (request: Request, response: Response) => {
   response.json(members);
 });
 
-app.post("/api/members",async(request: Request, response: Response) => {
+app.post("/api/members", async (request: Request, response: Response) => {
   console.log({ body: request.body });
   const member = await prisma.member.create({
     data: {
-      name:request.body.name,
-      address:request.body.address,
-      phoneNumber:request.body.phoneNumber,
-      birthday:request.body.birthday,
+      name: request.body.name,
+      address: request.body.address,
+      phoneNumber: request.body.phoneNumber,
+      birthday: new Date(request.body.birthday), //HACK: フロントでDateで送ってるはず！Responseの型定義ちゃんとすれば治りそう
     },
   });
   response.json(member);
 });
-
-
 
 server
   .listen(PORT, () => {
