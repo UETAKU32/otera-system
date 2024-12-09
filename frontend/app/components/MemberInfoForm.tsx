@@ -36,7 +36,7 @@ export default function MemberInfoForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting, isSubmitSuccessful },
     reset,
   } = useForm<MemberForm>({
     defaultValues: {
@@ -65,14 +65,10 @@ export default function MemberInfoForm() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ) as any,
   });
-  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const onSubmit = async (data: MemberForm) => {
-    setLoading(true);
     setError(null);
-    setSuccess(null);
 
     const newMember: Omit<Member, "id"> = {
       name: data.name,
@@ -93,14 +89,10 @@ export default function MemberInfoForm() {
       if (!response.ok) {
         throw new Error("メンバーの作成に失敗しました");
       }
-
-      setSuccess("メンバーが正常に作成されました");
       reset(); // フォームをリセット
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setError(error.message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -159,14 +151,16 @@ export default function MemberInfoForm() {
         <Button
           type="submit"
           className="w-full text-lg py-6"
-          disabled={loading || hasError}
+          disabled={isSubmitting || hasError}
           style={{ color: "#333" }}
         >
           送信
         </Button>
-        {loading && <p>送信中...</p>}
+        {isSubmitting && <p>送信中...</p>}
         {error && <p className="text-red-500">{error}</p>}
-        {success && <p className="text-green-500">{success}</p>}
+        {isSubmitSuccessful && (
+          <p className="text-green-500">メンバーが正常に作成されました</p>
+        )}
       </form>
     </div>
   );
