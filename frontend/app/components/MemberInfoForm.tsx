@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +7,7 @@ import { Member } from "../types/member";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useMutateMember } from "./hooks/useMembers";
 
 type MemberForm = Omit<Member, "id">;
 
@@ -16,21 +16,6 @@ type FieldLabel = {
   id: "name" | "address" | "phoneNumber" | "birthday";
   label: string;
 };
-
-// const validators = {
-//   name: (value: string) =>
-//     (value && value.length >= 3) || "名前は3文字以上必要です",
-//   address: (value: string) =>
-//     value === "" || value.length >= 10 || "住所は10文字以上必要です",
-//   phoneNumber: (value: string) =>
-//     value === "" ||
-//     /^[0-9]{10,11}$/.test(value) ||
-//     "電話番号は10〜11桁の数字で入力してください",
-//   birthday: (value: string) =>
-//     value === "" ||
-//     !isNaN(new Date(value).getTime()) ||
-//     "有効な日付を入力してください",
-// };
 
 export default function MemberInfoForm() {
   const {
@@ -65,11 +50,13 @@ export default function MemberInfoForm() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ) as any,
   });
-  const [error, setError] = useState<string | null>(null);
+
+  // mutateAsync: createMember は mutateAsync という名前で createMember 関数をラップしている
+  const { mutateAsync: createMember, error } = useMutateMember({
+    onSuccess: reset,
+  });
 
   const onSubmit = async (data: MemberForm) => {
-    setError(null);
-
     const newMember: Omit<Member, "id"> = {
       name: data.name,
       address: data.address,
@@ -77,23 +64,7 @@ export default function MemberInfoForm() {
       birthday: data.birthday ? new Date(data.birthday) : null, //FIXME
     };
 
-    try {
-      const response = await fetch(`http://localhost:8080/api/members`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newMember),
-      });
-
-      if (!response.ok) {
-        throw new Error("メンバーの作成に失敗しました");
-      }
-      reset(); // フォームをリセット
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      setError(error.message);
-    }
+    await createMember(newMember);
   };
 
   const displayOptions: FieldLabel[] = [
@@ -157,7 +128,7 @@ export default function MemberInfoForm() {
           送信
         </Button>
         {isSubmitting && <p>送信中...</p>}
-        {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="text-red-500">{error.message}</p>}
         {isSubmitSuccessful && (
           <p className="text-green-500">メンバーが正常に作成されました</p>
         )}

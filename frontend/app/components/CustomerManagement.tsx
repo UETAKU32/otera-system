@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from 'react'
-import Header from './CustomerManagement/Header'
-import CustomerTable from './CustomerManagement/CustomerTable'
-import Sidebar from './CustomerManagement/Sidebar'
-import { useMembers } from './hooks/useMembers'
+import { useState } from "react";
+import Header from "./CustomerManagement/Header";
+import CustomerTable from "./CustomerManagement/CustomerTable";
+import Sidebar from "./CustomerManagement/Sidebar";
+import { useMembers } from "./hooks/useMembers";
 
 // 表示オプション
 const displayOptions = [
@@ -13,31 +13,39 @@ const displayOptions = [
   { id: "address", label: "住所" },
   { id: "phoneNumber", label: "電話番号" },
   { id: "birthday", label: "誕生日" },
-]
+];
 
 export default function CustomerManagement() {
   const { data: members, isLoading, isError } = useMembers();
-  console.log({members, isLoading, isError});
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedOptions, setSelectedOptions] = useState(["name", "address","phoneNumber"])
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  console.log({ members, isLoading, isError });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedOptions, setSelectedOptions] = useState([
+    "name",
+    "address",
+    "phoneNumber",
+  ]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  if(!members) return (<>App loading...</>);
-  console.log({members});
+  //NOTE: クエリキーの説明で使ったコードです
+  //const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
+  //const { data: memberDetail } = useMemberDetail(selectedMemberId);
 
-  const filteredCustomers = members.filter(members =>
-    Object.values(members).some(value =>
+  if (!members) return <>App loading...</>;
+  console.log({ members });
+
+  const filteredCustomers = members.filter((members) =>
+    Object.values(members).some((value) =>
       value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
-  )
+  );
 
   const toggleOption = (optionId: string) => {
-    setSelectedOptions(prev =>
+    setSelectedOptions((prev) =>
       prev.includes(optionId)
-        ? prev.filter(id => id !== optionId)
+        ? prev.filter((id) => id !== optionId)
         : [...prev, optionId]
-    )
-  }
+    );
+  };
 
   return (
     <div className="flex flex-col h-screen">
@@ -60,5 +68,5 @@ export default function CustomerManagement() {
         />
       </div>
     </div>
-  )
+  );
 }
