@@ -20,3 +20,15 @@ model Member {
   phoneNumber String?  @db.VarChar(255)
   birthday    DateTime? @db.Date
 }
+
+model Deceased {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(255)
+  kaimyou     String  @db.VarChar(255)
+  relationToMember String?  @db.VarChar(255)
+  memberId Int 
+  deceasedDay DateTime? @db.Date
+  birthday    DateTime? @db.Date
+  kyounen DateTime? @db.Date
+  comment String?   @db.VarChar(255)
+}

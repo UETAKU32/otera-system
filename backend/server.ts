@@ -45,6 +45,28 @@ app.post("/api/members", async (request: Request, response: Response) => {
   response.json(member);
 });
 
+app.get("/api/deceased", async (request: Request, response: Response) => {
+  const deceased = await prisma.deceased.findMany();
+  response.json(deceased);
+});
+
+app.post("/api/deceased", async (request: Request, response: Response) => {
+  console.log({ body: request.body });
+  const deceased = await prisma.deceased.create({
+    data: {
+      name: request.body.name,
+      kaimyou: request.body.kaimyou,
+      relationToMember: request.body.relationToMember,
+      memberId: parseInt(request.body.memberId),
+      birthday: new Date(request.body.birthday), //HACK: フロントでDateで送ってるはず！Responseの型定義ちゃんとすれば治りそう
+      deceasedDay: new Date(request.body.deceasedDay),
+      kyounen: new Date(request.body.kyounen),
+      comment: request.body.comment,
+    },
+  });
+  response.json(deceased);
+});
+
 server
   .listen(PORT, () => {
     console.log("Server running at PORT: ", PORT);
