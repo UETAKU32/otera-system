@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import path from "path";
-import { PrismaClient } from "@prisma/client";
+import { Deceased, PrismaClient } from "@prisma/client";
 
 dotenv.config();
 const cors = require("cors");
@@ -50,17 +50,18 @@ app.get("/api/deceased", async (request: Request, response: Response) => {
   response.json(deceased);
 });
 
-app.post("/api/deceased", async (request: Request, response: Response) => {
+export type CreateDeceasedRequest = Request<unknown, unknown, Omit<Deceased, "id">, unknown>; 
+app.post("/api/deceased", async (request: CreateDeceasedRequest, response: Response) => {
   console.log({ body: request.body });
   const deceased = await prisma.deceased.create({
     data: {
       name: request.body.name,
       kaimyou: request.body.kaimyou,
       relationToMember: request.body.relationToMember,
-      memberId: parseInt(request.body.memberId),
-      birthday: new Date(request.body.birthday), //HACK: フロントでDateで送ってるはず！Responseの型定義ちゃんとすれば治りそう
-      deceasedDay: new Date(request.body.deceasedDay),
-      kyounen: new Date(request.body.kyounen),
+      memberId: Number(request.body.memberId),//HACK: なぜか文字列になってしまう
+      birthday: request.body.birthday, //HACK: フロントでDateで送ってるはず！Responseの型定義ちゃんとすれば治りそう
+      deceasedDay: request.body.deceasedDay,
+      kyounen: request.body.kyounen,
       comment: request.body.comment,
     },
   });
