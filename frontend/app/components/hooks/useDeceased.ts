@@ -2,18 +2,6 @@ import { Deceased } from "@/app/types/deceased";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const fetchDeceased = () => {
-  return axios
-    .get<Deceased[]>(`http://localhost:8080/api/members`)
-    .then((res) => res.data);
-};
-
-export const useMembers = () => {
-  return useQuery({
-    queryKey: ["deceased"],
-    queryFn: fetchDeceased,
-  });
-};
 
 export const useMutateDeceased = ({ onSuccess }: { onSuccess: () => void }) => {
   return useMutation({

@@ -32,3 +32,8 @@ model Deceased {
   kyounen DateTime? @db.Date
   comment String?   @db.VarChar(255)
 }
+
+model Temple {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(255)
+}

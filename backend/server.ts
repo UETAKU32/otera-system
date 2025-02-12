@@ -68,6 +68,20 @@ app.post("/api/deceased", async (request: CreateDeceasedRequest, response: Respo
   response.json(deceased);
 });
 
+app.get("/api/temples", async (request: Request, response: Response) => {
+  const temples = await prisma.temple.findMany();
+  response.json(temples);
+});
+
+app.post("/api/temple", async (request: Request, response: Response) => {
+  console.log({ body: request.body });
+  const temple = await prisma.temple.create({
+    data: {
+      name: request.body.name,
+    },
+  });
+  response.json(temple);
+});
 server
   .listen(PORT, () => {
     console.log("Server running at PORT: ", PORT);
