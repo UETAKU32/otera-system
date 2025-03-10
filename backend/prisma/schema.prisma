@@ -19,6 +19,8 @@ model Member {
   address     String?  @db.VarChar(255)
   phoneNumber String?  @db.VarChar(255)
   birthday    DateTime? @db.Date
+  temple      Temple @relation(fields: [templeId], references: [id])
+  templeId    Int    @default(1)
 }
 
 model Deceased {
@@ -36,4 +38,5 @@ model Deceased {
 model Temple {
   id          Int      @id @default(autoincrement())
   name        String   @db.VarChar(255)
+  members     Member[]
 }

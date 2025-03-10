@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `Member` ADD COLUMN `templeId` INTEGER NOT NULL DEFAULT 1;
+
+-- AddForeignKey
+ALTER TABLE `Member` ADD CONSTRAINT `Member_templeId_fkey` FOREIGN KEY (`templeId`) REFERENCES `Temple`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

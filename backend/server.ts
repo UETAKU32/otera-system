@@ -73,6 +73,24 @@ app.get("/api/temples", async (request: Request, response: Response) => {
   response.json(temples);
 });
 
+
+app.get("/api/temples/:id", async (request: Request, response: Response) => {
+  const templeId = parseInt(request.params.id, 10); // URLパラメータからidを取得し整数に変換
+  try {
+    const temple = await prisma.temple.findUnique({
+      where: { id: templeId },
+      include: { members: true }, // membersをEager Load
+    });
+    if (temple) {
+      response.json(temple);
+    } else {
+      response.status(404).json({ error: "Temple not found" });
+    }
+  } catch (error) {
+    response.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.post("/api/temple", async (request: Request, response: Response) => {
   console.log({ body: request.body });
   const temple = await prisma.temple.create({
@@ -82,6 +100,10 @@ app.post("/api/temple", async (request: Request, response: Response) => {
   });
   response.json(temple);
 });
+
+
+
+
 server
   .listen(PORT, () => {
     console.log("Server running at PORT: ", PORT);
