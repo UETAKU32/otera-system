@@ -28,7 +28,11 @@ app.use(express.static(path.join(__dirname)));
 app.use(express.json()); // body-parser settings
 
 app.get("/api/members", async (request: Request, response: Response) => {
-  const members = await prisma.member.findMany();
+  const members = await prisma.member.findMany({
+    include: {
+      temple: true, // Temple情報をEager Load
+    },
+  });
   response.json(members);
 });
 
@@ -40,6 +44,7 @@ app.post("/api/members", async (request: Request, response: Response) => {
       address: request.body.address,
       phoneNumber: request.body.phoneNumber,
       birthday: new Date(request.body.birthday), //HACK: フロントでDateで送ってるはず！Responseの型定義ちゃんとすれば治りそう
+      templeId: Number(request.body.templeId),
     },
   });
   response.json(member);

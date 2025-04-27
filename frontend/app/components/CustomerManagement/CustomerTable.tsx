@@ -9,6 +9,14 @@ type CustomerTableProps = {
 }
 
 export default function CustomerTable({ members, selectedOptions, displayOptions }: CustomerTableProps) {
+
+const output = (option:String,member: Member):any=> {
+  if(option == "templeName" ) {
+    return member.temple.name
+  } 
+  return member[option as keyof Member]
+}
+
   return (
     <main className="flex-1 overflow-auto p-4">
       <Table>
@@ -23,7 +31,7 @@ export default function CustomerTable({ members, selectedOptions, displayOptions
           {members.map(member => (
             <TableRow key={member.id}>
               {selectedOptions.map(option => (
-                <TableCell key={option}>{member[option as keyof Member]?.toString()}</TableCell>
+                <TableCell key={option}>{output(option,member)}</TableCell> 
               ))}
             </TableRow>
           ))}

@@ -7,12 +7,14 @@ import Sidebar from "./CustomerManagement/Sidebar";
 import { useMembers } from "./hooks/useMembers";
 
 // 表示オプション
+//TODO #28 https://github.com/UETAKU32/otera-system/issues/28
 const displayOptions = [
   { id: "id", label: "ID" },
   { id: "name", label: "名前" },
   { id: "address", label: "住所" },
   { id: "phoneNumber", label: "電話番号" },
   { id: "birthday", label: "誕生日" },
+  { id: "templeName", label: "所属寺" },
 ];
 
 export default function CustomerManagement() {
@@ -31,10 +33,9 @@ export default function CustomerManagement() {
   //const { data: memberDetail } = useMemberDetail(selectedMemberId);
 
   if (!members) return <>App loading...</>;
-  console.log({ members });
 
-  const filteredCustomers = members.filter((members) =>
-    Object.values(members).some((value) =>
+  const filteredCustomers = members.filter((member) =>
+    Object.values(member).some((value) =>
       value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );

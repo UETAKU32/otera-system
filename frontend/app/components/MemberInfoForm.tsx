@@ -7,7 +7,8 @@ import { Member } from "../types/member";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useMutateMember } from "./hooks/useMembers";
+import { useMembers, useMutateMember } from "./hooks/useMembers";
+import { useTemples } from "./hooks/useTemples";
 
 type MemberForm = Omit<Member, "id">;
 
@@ -18,6 +19,8 @@ type FieldLabel = {
 };
 
 export default function MemberInfoForm() {
+const { data: temples, isPending, isError } = useTemples();
+
   const {
     register,
     handleSubmit,
@@ -29,6 +32,7 @@ export default function MemberInfoForm() {
       address: "",
       phoneNumber: "",
       birthday: null,
+
     },
     resolver: yupResolver(
       yup.object().shape({
@@ -57,11 +61,12 @@ export default function MemberInfoForm() {
   });
 
   const onSubmit = async (data: MemberForm) => {
-    const newMember: Omit<Member, "id"> = {
+    const newMember: MemberForm = {
       name: data.name,
       address: data.address,
       phoneNumber: data.phoneNumber,
       birthday: data.birthday ? new Date(data.birthday) : null, //FIXME
+      templeId: data.templeId
     };
 
     await createMember(newMember);
@@ -118,6 +123,39 @@ export default function MemberInfoForm() {
               )}
             </div>
           ))}
+                    {/* Temple selection */}
+                    <div className="space-y-2">
+            <Label
+              htmlFor="temple"
+              className="text-lg"
+              style={{ color: "#333" }}
+            >
+              寺院を選択
+            </Label>
+            <select
+              {...register("templeId")}
+              id="temple"
+              className="w-full text-lg py-2 border border-gray-300 rounded-md" // 枠線と角丸を追加
+              style={{ color: "#333" }}
+            >
+              {isPending ? (
+                <option>読み込み中...</option>
+              ) : isError ? (
+                <option>エラーが発生しました</option>
+              ) : (
+                temples.map((temple) => (
+                  <option key={temple.id} value={temple.id}>
+                    {temple.name}
+                  </option>
+                ))
+              )}
+            </select>
+            {errors.templeId && (
+              <span className="text-red-500">
+                {errors.templeId?.message}
+              </span>
+            )}
+          </div>
         </div>
         <Button
           type="submit"
