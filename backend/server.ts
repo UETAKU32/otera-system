@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import path from "path";
-import { Deceased, PrismaClient } from "@prisma/client";
+import { Area, Deceased, PrismaClient } from "@prisma/client";
 
 dotenv.config();
 const cors = require("cors");
@@ -104,6 +104,16 @@ app.post("/api/temple", async (request: Request, response: Response) => {
     },
   });
   response.json(temple);
+});
+
+app.post("/api/areas", async (request: Request<any,any,Omit<Area,"id">>, response: Response) => {
+  console.log({ body: request.body });
+  const Area = await prisma.area.create({
+    data: {
+      name: request.body.name,
+    },
+  });
+  response.json(Area);
 });
 
 
