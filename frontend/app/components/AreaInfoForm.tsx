@@ -6,9 +6,12 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { Area } from "../types/area";
 import { useMutateAreas } from "./hooks/useAreas";
+import { useTemples } from "./hooks/useTemples";
 
 
-type AreaForm = Omit<Area, "id">;
+export type AreaForm = Omit<Area, "id"> & {
+    templeIds: number[];
+};
 
 //HACK: フィールド名を再定義しているようで保守性が悪い
 type FieldLabel = {
@@ -17,6 +20,8 @@ type FieldLabel = {
 };
 
 export default function AreaInfoForm() {
+  const { data: temples, isPending: isPendingTemples, isError: isErrorTemples } = useTemples();
+
   const {
     register,
     handleSubmit,
@@ -33,10 +38,7 @@ export default function AreaInfoForm() {
   });
 
   const onSubmit = async (data: AreaForm) => {
-    const newArea: Omit<Area, "id"> = {
-      name: data.name,
-    };
-    await createArea(newArea);
+    await createArea(data);
   };
 
   const displayOptions: FieldLabel[] = [
@@ -59,30 +61,54 @@ export default function AreaInfoForm() {
           地区情報入力フォーム
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {displayOptions.map((option) => (
-            <div key={option.id} className="space-y-2">
-              <Label
-                htmlFor={option.id}
-                className="text-lg"
-                style={{ color: "#333" }}
-              >
-                {option.label}
-              </Label>
-              {/* 入力欄 */}
-              <Input
-                {...register(option.id)} // useForm の register を使用
-                id={option.id}
-                className="w-full text-lg py-2"
-                style={{ color: "#333" }}
-              />
-              {/* エラーメッセージ表示 */}
-              {errors[option.id] && (
-                <span className="text-red-500">
-                  {errors[option.id]?.message}
-                </span>
-              )}
-            </div>
-          ))}
+          {/* 名前入力欄 */}
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-lg" style={{ color: "#333" }}>
+              名前
+            </Label>
+            <Input
+              {...register("name")}
+              id="name"
+              className="w-full text-lg py-2"
+              style={{ color: "#333" }}
+            />
+            {errors.name && (
+              <span className="text-red-500">{errors.name?.message}</span>
+            )}
+          </div>
+
+          {/* 複数選択可能な寺院チェックボックス */}
+          <div className="space-y-2">
+            <Label className="text-lg" style={{ color: "#333" }}>
+              寺院を選択（複数選択可）
+            </Label>
+            {isPendingTemples ? (
+              <div>読み込み中...</div>
+            ) : isErrorTemples ? (
+              <div>エラーが発生しました</div>
+            ) : (
+              <div className="flex flex-col gap-2 max-h-48 overflow-y-auto border p-2 rounded">
+                {temples.length > 0 ? (
+                  temples.map((temple) => (
+                    <label key={temple.id} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        value={temple.id}
+                        {...register("templeIds")}
+                        className="accent-blue-500"
+                      />
+                      {temple.name}
+                    </label>
+                  ))
+                ) : (
+                  <div>寺院データがありません</div>
+                )}
+              </div>
+            )}
+            {errors.templeIds && (
+              <span className="text-red-500">{errors.templeIds?.message}</span>
+            )}
+          </div>
         </div>
         <Button
           type="submit"

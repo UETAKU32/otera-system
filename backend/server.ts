@@ -106,16 +106,27 @@ app.post("/api/temple", async (request: Request, response: Response) => {
   response.json(temple);
 });
 
-app.post("/api/areas", async (request: Request<any,any,Omit<Area,"id">>, response: Response) => {
+
+type AreaForm = Omit<Area, "id"> & {
+  templeIds : number[];
+};
+app.post("/api/areas", async (request: Request<any,any,AreaForm>, response: Response) => {
   console.log({ body: request.body });
-  const Area = await prisma.area.create({
+  const area = await prisma.area.create({
     data: {
       name: request.body.name,
+      temples: {
+        connect: request.body.templeIds.map((templeId) => ({ id: Number(templeId) })),
+      },
     },
   });
-  response.json(Area);
+  response.json(area);
 });
 
+app.get("/api/areas", async (request: Request, response: Response) => {
+  const areas = await prisma.area.findMany();
+  response.json(areas);
+});
 
 
 

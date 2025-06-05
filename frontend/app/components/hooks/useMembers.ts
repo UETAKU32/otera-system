@@ -1,6 +1,7 @@
 import { Member } from "@/app/types/member";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { MemberForm } from "../MemberInfoForm";
 
 const fetchMembers = () => {
   return axios
@@ -50,7 +51,7 @@ export const useMutateMember = ({ onSuccess }: UseMutateMemberProps) => {
   });
 };
 
-const createMember = (member: Omit<Member, "id">) => {
+const createMember = (member: MemberForm) => {
   return axios
     .post<Member>(`http://localhost:8080/api/members`, member, {
       headers: {

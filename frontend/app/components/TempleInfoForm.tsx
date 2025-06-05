@@ -3,10 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Deceased } from "../types/deceased";
 import { useForm } from "react-hook-form";
 import { Temple } from "../types/temple";
 import { useMutateTemple } from "./hooks/useTemples";
+import { useAreas } from "./hooks/useAreas";
 
 type TempleForm = Omit<Temple, "id">;
 
@@ -31,6 +31,10 @@ export default function TempleInfoForm() {
   const { mutateAsync: createTemple, error } = useMutateTemple({
     onSuccess: reset,
   });
+
+  const { data: areas, isLoading, isError } = useAreas();
+
+  console.log({areas})
 
   const onSubmit = async (data: TempleForm) => {
     const newTemple: Omit<Temple, "id"> = {

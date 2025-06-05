@@ -10,7 +10,7 @@ import * as yup from "yup";
 import { useMembers, useMutateMember } from "./hooks/useMembers";
 import { useTemples } from "./hooks/useTemples";
 
-type MemberForm = Omit<Member, "id">;
+export type MemberForm = Omit<Member, "id" | "temple">;
 
 //HACK: Memberのフィールド名を再定義しているようで保守性が悪い
 type FieldLabel = {

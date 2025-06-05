@@ -1,12 +1,13 @@
 import { Area } from "@/app/types/area";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { AreaForm } from "../AreaInfoForm";
 
 
 export const useMutateAreas = ( { onSuccess }: { onSuccess: () => void } ) =>
 {
     return useMutation( {
-        mutationFn: async ( area: Omit<Area, "id"> ) =>
+        mutationFn: async ( area: AreaForm ) =>
         {
             const { data } = await axios.post( 'http://localhost:8080/api/areas', area );//axiosにホスト情報（localhost8080を設定する)
             return data;
@@ -22,7 +23,7 @@ const fetchAreas = () =>
         .then( ( res ) => res.data );
 };
 
-export const useTemples = () =>
+export const useAreas = () =>
 {
     return useQuery( {
         queryKey: [ "Areas" ],
