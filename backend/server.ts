@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import path from "path";
-import { Area, Deceased, PrismaClient } from "@prisma/client";
+import { Area, Deceased, PrismaClient, Temple } from "@prisma/client";
 
 dotenv.config();
 const cors = require("cors");
@@ -96,11 +96,17 @@ app.get("/api/temples/:id", async (request: Request, response: Response) => {
   }
 });
 
-app.post("/api/temple", async (request: Request, response: Response) => {
-  console.log({ body: request.body });
+type TempleForm = Omit<Temple, "id"> & {
+  areaIds : number[];
+};
+
+app.post("/api/temple", async (request: Request<any,Temple,TempleForm>, response: Response) => {
   const temple = await prisma.temple.create({
     data: {
       name: request.body.name,
+      areas: {
+        connect: request.body.areaIds.map((areaId) => ({ id: Number(areaId) })),
+      },
     },
   });
   response.json(temple);
@@ -110,8 +116,7 @@ app.post("/api/temple", async (request: Request, response: Response) => {
 type AreaForm = Omit<Area, "id"> & {
   templeIds : number[];
 };
-app.post("/api/areas", async (request: Request<any,any,AreaForm>, response: Response) => {
-  console.log({ body: request.body });
+app.post("/api/areas", async (request: Request<any,Area,AreaForm>, response: Response) => {
   const area = await prisma.area.create({
     data: {
       name: request.body.name,

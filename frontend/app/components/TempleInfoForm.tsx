@@ -32,15 +32,10 @@ export default function TempleInfoForm() {
     onSuccess: reset,
   });
 
-  const { data: areas, isLoading, isError } = useAreas();
-
-  console.log({areas})
+  const { data: areas, isPending: isPendingAreas , isError: isErrorAreas } = useAreas();
 
   const onSubmit = async (data: TempleForm) => {
-    const newTemple: Omit<Temple, "id"> = {
-      name: data.name,
-    };
-    await createTemple(newTemple);
+    await createTemple(data);
   };
 
   const displayOptions: FieldLabel[] = [
@@ -87,6 +82,38 @@ export default function TempleInfoForm() {
               )}
             </div>
           ))}
+                    {/* 複数選択可能な寺院チェックボックス */}
+                    <div className="space-y-2">
+            <Label className="text-lg" style={{ color: "#333" }}>
+              寺院を選択（複数選択可）
+            </Label>
+            {isPendingAreas ? (
+              <div>読み込み中...</div>
+            ) : isErrorAreas ? (
+              <div>エラーが発生しました</div>
+            ) : (
+              <div className="flex flex-col gap-2 max-h-48 overflow-y-auto border p-2 rounded">
+                {areas.length > 0 ? (
+                  areas.map((area) => (
+                    <label key={area.id} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        value={area.id}
+                        {...register("areaIds")}
+                        className="accent-blue-500"
+                      />
+                      {area.name}
+                    </label>
+                  ))
+                ) : (
+                  <div>寺院データがありません</div>
+                )}
+              </div>
+            )}
+            {errors.areaIds && (
+              <span className="text-red-500">{errors.areaIds?.message}</span>
+            )}
+          </div>
         </div>
         <Button
           type="submit"
