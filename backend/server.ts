@@ -30,14 +30,17 @@ app.use(express.json()); // body-parser settings
 app.get("/api/members", async (request: Request, response: Response) => {
   const members = await prisma.member.findMany({
     include: {
-      temple: true, // Temple情報をEager Load
+      temple: {
+        include: {
+          areas: true,
+        },
+      },
     },
   });
   response.json(members);
 });
 
 app.post("/api/members", async (request: Request, response: Response) => {
-  console.log({ body: request.body });
   const member = await prisma.member.create({
     data: {
       name: request.body.name,

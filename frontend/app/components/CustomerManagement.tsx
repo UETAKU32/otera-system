@@ -15,11 +15,11 @@ const displayOptions = [
   { id: "phoneNumber", label: "電話番号" },
   { id: "birthday", label: "誕生日" },
   { id: "templeName", label: "所属寺" },
+  { id: "areas", label: "所属地区" },
 ];
 
 export default function CustomerManagement() {
   const { data: members, isLoading, isError } = useMembers();
-  console.log({ members, isLoading, isError });
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([
     "name",
